@@ -20,53 +20,35 @@ export default function Hero() {
         overflow: 'hidden',
       }}
     >
-      {/* Background */}
+      {/* Background — dark fallback */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, #0a0a0a 0%, #080808 40%, #100508 100%)',
+          background: '#080808',
           zIndex: 0,
         }}
       />
 
-      {/* Subtle geometric accent — boxing ring ropes inspiration */}
-      <div
+      {/* Background video */}
+      <video
         aria-hidden
+        autoPlay
+        muted
+        loop
+        playsInline
         style={{
           position: 'absolute',
           inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
           zIndex: 1,
-          overflow: 'hidden',
         }}
       >
-        {/* Large red circle glow — upper right */}
-        <div style={{
-          position: 'absolute',
-          top: '-20%',
-          right: '-15%',
-          width: 'clamp(400px, 60vw, 900px)',
-          height: 'clamp(400px, 60vw, 900px)',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(200,16,46,0.12) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        {/* Faint diagonal lines */}
-        <svg
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.03 }}
-          preserveAspectRatio="none"
-        >
-          {Array.from({ length: 20 }).map((_, i) => (
-            <line
-              key={i}
-              x1={`${i * 5 - 10}%`} y1="0%"
-              x2={`${i * 5 + 40}%`} y2="100%"
-              stroke="#f5f5f7"
-              strokeWidth="1"
-            />
-          ))}
-        </svg>
-      </div>
+        <source src="/hero.mp4" type="video/mp4" />
+      </video>
 
       {/* Gradient overlay */}
       <div
@@ -74,7 +56,7 @@ export default function Hero() {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom, rgba(8,8,8,0.2) 0%, rgba(8,8,8,0.5) 50%, rgba(8,8,8,0.95) 100%)',
+          background: 'linear-gradient(to bottom, rgba(8,8,8,0.35) 0%, rgba(8,8,8,0.55) 50%, rgba(8,8,8,0.95) 100%)',
           zIndex: 2,
         }}
       />

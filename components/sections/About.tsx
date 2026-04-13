@@ -1,9 +1,16 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import { fadeUp, slideInLeft, slideInRight, stagger } from '@/lib/animations'
+
+const photos = [
+  '/JP25-1.jpg',
+  '/JP25-2.jpg',
+  '/JP25-3.jpg',
+]
 
 const credentials = [
   { icon: '🥊', label: 'Golden Gloves Competitor' },
@@ -14,6 +21,10 @@ const credentials = [
 export default function About() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-100px' })
+  const [current, setCurrent] = useState(0)
+
+  const prev = () => setCurrent((i) => (i - 1 + photos.length) % photos.length)
+  const next = () => setCurrent((i) => (i + 1) % photos.length)
 
   return (
     <section
@@ -35,67 +46,82 @@ export default function About() {
           animate={inView ? 'visible' : 'hidden'}
           style={{ position: 'relative', maxWidth: '480px', margin: '0 auto', width: '100%' }}
         >
-          {/* Floating image container */}
-          <div
-            className="animate-float"
-            style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden' }}
-          >
-            {/* Placeholder image — replace with trainer photo */}
-            <div
-              style={{
-                aspectRatio: '3/4',
-                background: 'linear-gradient(160deg, #1a1a1a 0%, #111111 50%, #0d0508 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '16px',
-                border: '1px solid #222222',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Placeholder boxing silhouette */}
-              <svg viewBox="0 0 200 280" fill="none" style={{ width: '55%', opacity: 0.15 }}>
-                <path d="M100 20 C100 20 80 40 80 70 C80 85 85 95 90 100 L70 160 C65 175 60 190 65 200 C70 210 80 215 90 210 L100 200 L110 210 C120 215 130 210 135 200 C140 190 135 175 130 160 L110 100 C115 95 120 85 120 70 C120 40 100 20 100 20Z" fill="#f5f5f7"/>
-                <circle cx="100" cy="40" r="18" fill="#f5f5f7"/>
-                <path d="M70 110 L40 130 C35 133 30 140 32 148 C34 156 42 160 50 157 L80 145" stroke="#f5f5f7" strokeWidth="8" strokeLinecap="round"/>
-                <path d="M130 110 L160 130 C165 133 170 140 168 148 C166 156 158 160 150 157 L120 145" stroke="#f5f5f7" strokeWidth="8" strokeLinecap="round"/>
-                <ellipse cx="42" cy="150" rx="14" ry="10" fill="#c8102e" opacity="0.8"/>
-                <ellipse cx="158" cy="150" rx="14" ry="10" fill="#c8102e" opacity="0.8"/>
-              </svg>
+          {/* Carousel */}
+          <div className="animate-float" style={{ position: 'relative' }}>
+            {/* Image */}
+            <div style={{ position: 'relative', aspectRatio: '3/4', borderRadius: '16px', overflow: 'hidden', border: '1px solid #222222' }}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ position: 'absolute', inset: 0 }}
+                >
+                  <Image
+                    src={photos[current]}
+                    alt={`Justin Parina photo ${current + 1}`}
+                    fill
+                    style={{ objectFit: 'cover', objectPosition: 'center top' }}
+                    priority={current === 0}
+                  />
+                </motion.div>
+              </AnimatePresence>
 
               {/* Red accent border glow on right edge */}
               <div style={{
-                position: 'absolute',
-                right: 0,
-                top: 0,
-                bottom: 0,
-                width: '3px',
+                position: 'absolute', right: 0, top: 0, bottom: 0, width: '3px',
                 background: 'linear-gradient(to bottom, transparent, #c8102e, transparent)',
+                zIndex: 2,
               }} />
 
-              {/* Label overlay */}
-              <div style={{
-                position: 'absolute',
-                bottom: '1.5rem',
-                left: '1.5rem',
-                right: '1.5rem',
-              }}>
-                <div style={{
-                  background: 'rgba(8,8,8,0.8)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid #222',
-                  borderRadius: '8px',
-                  padding: '0.75rem 1rem',
-                }}>
-                  <p style={{ color: '#424245', fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>
-                    Trainer Photo
-                  </p>
-                  <p style={{ color: '#86868b', fontSize: '0.75rem' }}>
-                    High-res photo to be provided by client
-                  </p>
-                </div>
-              </div>
+              {/* Prev / Next buttons */}
+              <button
+                onClick={prev}
+                aria-label="Previous photo"
+                style={{
+                  position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)',
+                  zIndex: 3, background: 'rgba(8,8,8,0.6)', backdropFilter: 'blur(8px)',
+                  border: '1px solid #333', borderRadius: '50%',
+                  width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#f5f5f7',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              <button
+                onClick={next}
+                aria-label="Next photo"
+                style={{
+                  position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)',
+                  zIndex: 3, background: 'rgba(8,8,8,0.6)', backdropFilter: 'blur(8px)',
+                  border: '1px solid #333', borderRadius: '50%',
+                  width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#f5f5f7',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+
+            {/* Dots */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+              {photos.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  aria-label={`Go to photo ${i + 1}`}
+                  style={{
+                    width: i === current ? 20 : 6, height: 6,
+                    borderRadius: '9999px',
+                    background: i === current ? '#c8102e' : '#333',
+                    border: 'none', cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    padding: 0,
+                  }}
+                />
+              ))}
             </div>
           </div>
 
@@ -147,7 +173,7 @@ export default function About() {
               color: '#f5f5f7',
             }}
           >
-            [Trainer Name]
+            [JUSTIN PARINA]
           </motion.h2>
 
           <motion.div variants={fadeUp} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
